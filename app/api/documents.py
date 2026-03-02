@@ -68,4 +68,4 @@ def upload_document(
     db.commit()
     db.refresh(new_document)
 
-    return {"message": "File uploaded successfully"}
+    return {"message": "File uploaded successfully", "document_id": str(new_document.id), "file_name": new_document.file_name} #changes
