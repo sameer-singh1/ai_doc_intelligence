@@ -11,7 +11,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
 
 
-from sqlalchemy import Column, String, ForeignKey, DateTime
+from sqlalchemy import Column, String, ForeignKey, DateTime, Text
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -26,3 +26,5 @@ class Document(Base):
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User")
+
+    content = Column(Text, nullable=True)

@@ -8,6 +8,8 @@ from app.database.connection import get_db
 from app.database.models import Document
 from app.core.auth_dependency import get_current_user
 
+import PyPDF2
+
 router = APIRouter(prefix="/documents", tags=["Documents"])
 
 UPLOAD_DIR = "uploads"
@@ -31,12 +33,26 @@ def upload_document(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
+    # Extract text from PDF
+    text_content = ""
+    with open(file_path, "rb") as pdf_file:
+        reader = PyPDF2.PdfReader(pdf_file)
+        for page in reader.pages:
+            text_content += page.extract_text() or ""   
+
     # Save record in DB
+    # new_document = Document(
+    #     user_id=current_user.id,
+    #     file_name=file.filename,
+    #     file_path=file_path
+    # )
+
     new_document = Document(
         user_id=current_user.id,
         file_name=file.filename,
-        file_path=file_path
-    )
+        file_path=file_path,
+        content=text_content
+    )   
 
     db.add(new_document)
     db.commit()
