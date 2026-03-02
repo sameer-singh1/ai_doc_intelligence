@@ -8,7 +8,7 @@ from app.database.connection import get_db
 from app.database.models import Document
 from app.core.auth_dependency import get_current_user
 
-import PyPDF2
+import fitz  # PyMuPDF
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
 
@@ -34,11 +34,21 @@ def upload_document(
         shutil.copyfileobj(file.file, buffer)
 
     # Extract text from PDF
+    # text_content = ""
+    # with open(file_path, "rb") as pdf_file:
+    #     reader = PyPDF2.PdfReader(pdf_file)
+    #     for page in reader.pages:
+    #         text_content += page.extract_text() or ""   
+
+
     text_content = ""
-    with open(file_path, "rb") as pdf_file:
-        reader = PyPDF2.PdfReader(pdf_file)
-        for page in reader.pages:
-            text_content += page.extract_text() or ""   
+
+    doc = fitz.open(file_path)
+
+    for page in doc:
+        text_content += page.get_text()
+
+    doc.close() 
 
     # Save record in DB
     # new_document = Document(
