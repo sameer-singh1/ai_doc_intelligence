@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from app.database.connection import engine
 from app.database.models import Base
-from app.api import auth
+from app.api import auth, documents
 from app.core.auth_dependency import get_current_user
 
 app = FastAPI()
@@ -9,6 +9,8 @@ app = FastAPI()
 Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
+
+app.include_router(documents.router)
 
 @app.get("/")
 def home():
